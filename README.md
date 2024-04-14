@@ -1,2 +1,2 @@
 # WebStyler
-Chrome web-styler deigned to make pages more readable
+Chrome web-styler designed to make pages more readable
