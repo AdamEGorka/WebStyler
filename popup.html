@@ -1,5 +1,32 @@
-<html>
+<!-- <html>
   <body>
     <h1>WebStyler</h1>
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Webstyler Extension</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="slider-container">
+        <label for="size-slider">Size:</label>
+        <input type="range" id="size-slider" min="0" max="100">
+    </div>
+    <div class="slider-container">
+        <label for="spacing-slider">Spacing:</label>
+        <input type="range" id="spacing-slider" min="0" max="100">
+    </div>
+    <div class="color-picker-container">
+        <label for="color-wheel">Color:</label>
+        <input type="color" id="color-wheel">
+    </div>
+    <div class="buttons-container">
+        <button id="apply-btn">Apply</button>
+        <button id="cancel-btn">Cancel</button>
+    </div>
+</body>
 </html>
