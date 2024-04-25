@@ -79,6 +79,7 @@ input[type="color"]::-webkit-color-swatch {
 
 button {
     border: none;
+    margin: 5px 5px 0 0;
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
