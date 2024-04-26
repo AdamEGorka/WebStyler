@@ -12,16 +12,19 @@ async function getCurrentTabId() {
     }
 }
 
+// Gets size from size slider
 function getSize() {
-    var size_slider = document.getElementById("size-slider")
-    return size-slider.value;
+    var sizeSlider = document.getElementById("size-slider")
+    return sizeSlider.value;
 }
 
+// Gets color from color wheel
 function getColor() {
-    var color_wheel = document.getElementById("color-wheel")
-    return color_wheel.value;
+    var colorWheel = document.getElementById("color-wheel");
+    return colorWheel.value;
 }
 
+// Returns the new CSS to be injected into the website
 function getCSS() {
     return `
     * {
@@ -30,62 +33,50 @@ function getCSS() {
     }
     `;
 }
-var prev_css = ''
-var curr_css = ''
+var currCss = '';
 
-async function injectScriptIfNeeded(tab_Id, reset) {
+// Applies new CSS according to the specified size, spacing, color, etc.
+async function apply() {
+    let currTabId = await getCurrentTabId();
+    // Removes old CSS before injecting new one to not flood website with old CSS
+    removeCSS(currTabId);
+    
+    currCss = getCSS();
     try {
-        
-        // Check if the script is already injected
-        const [result] = await chrome.scripting.executeScript({
-            target: { tabId : tab_Id },
-            function: () => window.cssInjected,
+        chrome.scripting.insertCSS({
+            target : {tabId : currTabId},
+            css : currCss
         });
-        // If the script is not injected, inject it. Or True
-        if (!result?.result || true) {
-            prev_css = curr_css;
-            curr_css = reset ? '' : getCSS();
-            console.log(prev_css);
-            console.log(curr_css);
-            await chrome.scripting.removeCSS({
-                target : {tabId : tab_Id},
-                css : prev_css
-            });
-            await chrome.scripting.insertCSS({
-                target : { tabId : tab_Id },
-                css : curr_css
-            }).then(() => console.log("New CSS injected"));
-            // After successful injection, mark the script as injected
-            await chrome.scripting.executeScript({
-                target: { tabId : tab_Id },
-                function: () => { window.cssInjected = true; },
-            });
-        }
-        
+        console.log("New CSS injected");
     } catch (err) {
-        console.error("Failed to inject or check script: ", err);
+        console.error("Failed to inject css: ", err);
     }
 }
 
-// This async function toggles the state of the extension.
-// It sends a message with { toggle: true } to the content script
-// running in the current tab. This approach simplifies the logic
-// by not requiring the service worker to keep track of the auto-clicker's state.
-async function toggleEnableExtension(reset) {
-    let currentTabId = await getCurrentTabId();
-    if (currentTabId) {
-        await injectScriptIfNeeded(currentTabId, reset);
-        chrome.tabs.sendMessage(currentTabId, { toggle: true }).catch(err =>
-            console.error("failed to send message: ", err)
-        );
-    };
+// Resets the website's CSS to what it was initially
+async function reset() {
+    let currTabId = await getCurrentTabId();
+    removeCSS(currTabId);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    var apply_btn = document.getElementById("apply-btn")
-    apply_btn.addEventListener('click', () => toggleEnableExtension(false));
-    console.log(getColor());
+// Helper function to remove CSS. Separated from reset() to avoid recomputing currTabId in apply()
+async function removeCSS(currTabId) {
+    try {
+        chrome.scripting.removeCSS({
+            target : {tabId : currTabId},
+            css : currCss
+        });
+        console.log("CSS reset");
+    } catch (err) {
+        console.error("Failed to reset CSS: ", err)
+    }
+}
 
-    var reset_btn = document.getElementById("reset-btn")
-    reset_btn.addEventListener('click', () => toggleEnableExtension(true));
+// When DOM is loaded, adds event listeners to buttons
+document.addEventListener('DOMContentLoaded', function () {
+    var applyBtn = document.getElementById("apply-btn")
+    applyBtn.addEventListener('click', apply);
+
+    var resetBtn = document.getElementById("reset-btn")
+    resetBtn.addEventListener('click', reset);
 });
