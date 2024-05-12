@@ -9,6 +9,7 @@ async function getCurrentTabId() {
         return null;
     }
 }
+var currTabId;
 
 // Gets size from size slider, ranging from 1 to 100
 function getSize() {
@@ -16,12 +17,19 @@ function getSize() {
     // Prevents returned size from being 0
     return Math.max(sizeSlider.value, 1);
 }
-var currSize = 50;
+var currSize = localStorage.getItem("savedSize");
+if (currSize == null) {
+    currSize = 50;
+}
 
 // Gets color from color wheel
 function getColor() {
     var colorWheel = document.getElementById("color-wheel");
     return colorWheel.value;
+}
+var currColor = localStorage.getItem("savedColor");
+if (currColor == null) {
+    currColor = "#000000";
 }
 
 // Returns the new CSS to be injected into the website
@@ -33,14 +41,18 @@ function getCSS() {
     }
     `;
 }
-var currCss = '';
+var currCss = localStorage.getItem("savedCss");
+if (currCss == null) {
+    currCss = '';
+}
 
 // Applies new CSS according to the specified color
 async function applyCSS() {
-    var currTabId = await getCurrentTabId();
+    localStorage.clear();
     // Removes old CSS before injecting new one to not flood website with old CSS
-    removeCSS(currTabId);
-    
+    removeCSS(currTabId);    
+
+    currColor = getColor();
     currCss = getCSS();
     try {
         chrome.scripting.insertCSS({
@@ -55,71 +67,64 @@ async function applyCSS() {
 
 // Resets the website's CSS to what it was initially
 async function reset() {
-    getCurrentTabId().then((currTabId) => {
-        removeCSS(currTabId);
+    removeCSS().then(() => {
+        console.log("CSS reset");
     });
-    changeSize(currSize, 50).then(() => {
-        currSize = 50;
+    changeSize(50).then(() => {
         console.log("Size reset");
     });
 }
 
-// Helper function to remove CSS. Separated from reset() to avoid recomputing currTabId in applyCSS()
-async function removeCSS(currTabId) {
+// Helper function to remove CSS
+async function removeCSS() {
     try {
         chrome.scripting.removeCSS({
             target : {tabId : currTabId},
             css : currCss
         });
-        console.log("CSS reset");
     } catch (err) {
-        console.error("Failed to reset CSS: ", err);
+        console.error("Failed to remove CSS: ", err);
     }
 }
 
 // Applies new size according to the specified size
 async function applySize() {
-    await changeSize(currSize, getSize());
-    // Updates currSize. Important that it's after the call to changeSize, executeScript in particular
     currSize = getSize();
+    changeSize(getSize());
 }
 
 // Helper function to change size. Separated from applySize() to allow giving inputs in reset()
-async function changeSize(oldSize, newSize) {
-    chrome.tabs.query({
-        active: true, currentWindow: true
-    }).then(function (tabs) {
-        var activeTab = tabs[0];
-        var activeTabId = activeTab.id;
-
+async function changeSize(newSize) {
+    try {
         chrome.scripting.executeScript({
-            target: { tabId: activeTabId },
+            target: {tabId: currTabId},
             func: resizeBody,
-            args: [oldSize, newSize]
+            args: [newSize]
         });
         console.log("Size changed");
-    }).catch(function (error) {
-        console.log("There was an error injecting the script: " + error.message);
-    });
+    } catch(error) {
+        console.error("There was an error injecting the script: " + error.message);
+    };
 }
 
 // Resizes elements in body
-function resizeBody(oldSize, newSize) {
+function resizeBody(newSize) {
     /**
      * Recursively resizes the given element and its children.
      * @param {HTMLElement} elt - The element to resize.
      */
     function resizeChildren(elt) {
+        // Undoes any previous fontSize change
+        elt.style.fontSize = "";
         // Recurse over elt.children
         for (var child of elt.children) {
             // Notably avoids changing font size of parent affecting font size of children by changing children first
             resizeChildren(child);
         }
-        // Restyle current elt
         var style = window.getComputedStyle(elt, null);
         var fontSize = parseFloat(style.getPropertyValue('font-size'));
-        // Unscales by oldSize/50 and scales by newSize/50 at the same time
-        elt.style.fontSize = (fontSize / (oldSize/50) * (newSize/50)) + 'px';
+        // Scales fontSize of current elt by newSize/50.0
+        elt.style.fontSize = (fontSize * (newSize/50.0)) + 'px';
     }
 
     body = document.querySelector("body");
@@ -127,13 +132,24 @@ function resizeBody(oldSize, newSize) {
 }
 
 // When DOM is loaded, adds event listeners to buttons
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
+    currTabId = await getCurrentTabId();
+
     var applyBtn = document.getElementById("apply-btn");
     applyBtn.addEventListener('click', applyCSS);
     applyBtn.addEventListener('click', applySize);
 
     var resetBtn = document.getElementById("reset-btn");
     resetBtn.addEventListener('click', reset);
+
+    document.getElementById("size-slider").value = ""+currSize;
+    document.getElementById("color-wheel").value = currColor;
+});
+
+document.addEventListener('visibilitychange', function () {
+    localStorage.setItem("savedCss", currCss);
+    localStorage.setItem("savedColor", currColor);
+    localStorage.setItem("savedSize", currSize);
 });
 
 // https://stackoverflow.com/questions/77495555/how-do-i-execute-a-script-on-the-current-tab-using-chrome-scripting-api:
