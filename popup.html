@@ -13,17 +13,36 @@
     <script src='popup.js'></script>
 </head>
 <body>
-    <div class="slider-container">
+    <div class="feature-container">
+        <input type="checkbox" id="enable-size" checked>
         <label for="size-slider">Size:</label>
         <input type="range" id="size-slider" min="0" max="100">
     </div>
-    <div class="slider-container">
+    <div class="feature-container">
+        <input type="checkbox" id="enable-spacing" checked>
         <label for="spacing-slider">Spacing:</label>
         <input type="range" id="spacing-slider" min="0" max="100">
     </div>
-    <div class="color-picker-container">
+    <div class="feature-container">
+        <input type="checkbox" id="enable-font" checked>
+        <label for="font-select">Font:</label>
+        <select id="font-select">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Helvetica">Helvetica</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+        </select>
+    </div>
+    <div class="feature-container">
+        <input type="checkbox" id="enable-color" checked>
         <label for="color-wheel">Color:</label>
         <input type="color" id="color-wheel">
+    </div>
+    <div class="feature-container">
+        <input type="checkbox" id="enable-bg-color" checked>
+        <label for="bg-color-wheel">BG Color:</label>
+        <input type="color" id="bg-color-wheel">
     </div>
     <div class="buttons-container">
         <button id="apply-btn">Apply</button>

@@ -101,6 +101,10 @@ button:hover {
     justify-content: space-between;
 }
 
+.feature-container {
+    margin-bottom: 10px; /* Adjust this value for the desired gap */
+}
+
 #apply-btn {
     margin-right: 10px;
 }

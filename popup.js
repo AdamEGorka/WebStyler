@@ -9,6 +9,7 @@ async function getCurrentTabId() {
         return null;
     }
 }
+
 var currTabId;
 
 // Gets size from size slider, ranging from 1 to 100
@@ -29,15 +30,48 @@ function getColor() {
 }
 var currColor = localStorage.getItem("savedColor");
 if (currColor == null) {
-    currColor = "#000000";
+    currColor = "#c3c3c3";
+}
+
+// Gets background color from color wheel
+function getBgColor() {
+    var bgColorWheel = document.getElementById("bg-color-wheel");
+    return bgColorWheel.value;
+}
+var currBgColor = localStorage.getItem("savedBgColor");
+if (currBgColor == null) {
+    currBgColor = "#3c3c3c";
+}
+
+// Gets font from font select
+function getFont() {
+    var fontSelect = document.getElementById("font-select");
+    return fontSelect.value;
+}
+var currFont = localStorage.getItem("savedFont");
+if (currFont == null) {
+    currFont = "Arial";
 }
 
 // Returns the new CSS to be injected into the website
 function getCSS() {
+    let css = "";
+    let bodyCss = "";
+    if (document.getElementById("enable-color").checked) {
+        css += `color: ${getColor()} !important;`;
+    }
+    if (document.getElementById("enable-font").checked) {
+        css += `font-family: ${getFont()} !important;`;
+    }
+    if (document.getElementById("enable-bg-color").checked) {
+        bodyCss += `background-color: ${getBgColor()} !important;`;
+    }
     return `
     * {
-        color: ${getColor()} !important;
-        /*font-family: "Georgia" !important;*/
+        ${css}
+    }
+    body {
+        ${bodyCss}
     }
     `;
 }
@@ -46,18 +80,20 @@ if (currCss == null) {
     currCss = '';
 }
 
-// Applies new CSS according to the specified color
+// Applies new CSS according to the specified color and font
 async function applyCSS() {
     localStorage.clear();
     // Removes old CSS before injecting new one to not flood website with old CSS
-    removeCSS(currTabId);    
+    removeCSS(currTabId);
 
     currColor = getColor();
+    currFont = getFont();
     currCss = getCSS();
+    currBgColor = getBgColor();
     try {
         chrome.scripting.insertCSS({
-            target : {tabId : currTabId},
-            css : currCss
+            target: {tabId: currTabId},
+            css: currCss
         });
         console.log("New CSS injected");
     } catch (err) {
@@ -79,8 +115,8 @@ async function reset() {
 async function removeCSS() {
     try {
         chrome.scripting.removeCSS({
-            target : {tabId : currTabId},
-            css : currCss
+            target: {tabId: currTabId},
+            css: currCss
         });
     } catch (err) {
         console.error("Failed to remove CSS: ", err);
@@ -89,8 +125,10 @@ async function removeCSS() {
 
 // Applies new size according to the specified size
 async function applySize() {
-    currSize = getSize();
-    changeSize(getSize());
+    if (document.getElementById("enable-size").checked) {
+        currSize = getSize();
+        changeSize(getSize());
+    }
 }
 
 // Helper function to change size. Separated from applySize() to allow giving inputs in reset()
@@ -102,7 +140,7 @@ async function changeSize(newSize) {
             args: [newSize]
         });
         console.log("Size changed");
-    } catch(error) {
+    } catch (error) {
         console.error("There was an error injecting the script: " + error.message);
     };
 }
@@ -124,7 +162,7 @@ function resizeBody(newSize) {
         var style = window.getComputedStyle(elt, null);
         var fontSize = parseFloat(style.getPropertyValue('font-size'));
         // Scales fontSize of current elt by newSize/50.0
-        elt.style.fontSize = (fontSize * (newSize/50.0)) + 'px';
+        elt.style.fontSize = (fontSize * (newSize / 50.0)) + 'px';
     }
 
     body = document.querySelector("body");
@@ -142,14 +180,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     var resetBtn = document.getElementById("reset-btn");
     resetBtn.addEventListener('click', reset);
 
-    document.getElementById("size-slider").value = ""+currSize;
+    document.getElementById("size-slider").value = "" + currSize;
     document.getElementById("color-wheel").value = currColor;
+    document.getElementById("bg-color-wheel").value = currBgColor;
+    document.getElementById("font-select").value = currFont;
 });
 
 document.addEventListener('visibilitychange', function () {
     localStorage.setItem("savedCss", currCss);
     localStorage.setItem("savedColor", currColor);
     localStorage.setItem("savedSize", currSize);
+    localStorage.setItem("savedBgColor", currBgColor);
+    localStorage.setItem("savedFont", currFont);
 });
 
 // https://stackoverflow.com/questions/77495555/how-do-i-execute-a-script-on-the-current-tab-using-chrome-scripting-api:
