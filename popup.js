@@ -85,11 +85,7 @@ async function applyCSS() {
     localStorage.clear();
     // Removes old CSS before injecting new one to not flood website with old CSS
     removeCSS(currTabId);
-
-    currColor = getColor();
-    currFont = getFont();
     currCss = getCSS();
-    currBgColor = getBgColor();
     try {
         chrome.scripting.insertCSS({
             target: {tabId: currTabId},
