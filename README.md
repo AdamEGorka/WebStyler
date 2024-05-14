@@ -14,5 +14,9 @@ Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the Web
 * **Intuitive Interface**: Provides easy-to-use sliders and color wheels for changing visual features.
 
 ## Installation
-
+* Pull the github repo to a local file on your computer.
+* Navigate to chrome://extensions
+* Expand the Developer drop-down and click “Load unpacked extension”
+* Navigate to the directory where you put your code and click Ok
+* Assuming there are no errors, you should see a new icon in your toolbar.
 ## Demo
