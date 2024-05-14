@@ -20,3 +20,13 @@ Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the Web
 * Navigate to the directory where you put your code and click Ok
 * Assuming there are no errors, you should see a new icon in your toolbar.
 ## Demo
+![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/8886864c-1cec-480e-845f-c26cbbe1a80d)
+![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/4782fd43-d284-482a-9280-28df970325a9)
+
+
+## Colorblind filters
+![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/39ef2d36-9773-4eb1-85bc-7a6ee4737d77)
+
+## Dynamic text resizing without the need for zoom 
+![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/d5a1cc86-58de-49c0-8e26-821cd33f0c1b)
+
