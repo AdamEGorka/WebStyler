@@ -12,6 +12,9 @@ body {
 .color-picker-container,
 .buttons-container {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between; /* Ensures space between buttons if needed */
+    align-items: center; /* Centers buttons vertically */
 }
 
 .slider-container label,
@@ -78,6 +81,7 @@ input[type="color"]::-webkit-color-swatch {
 }
 
 button {
+    flex-grow: 1; /* Grow to fill the container */
     border: none;
     margin: 5px 5px 0 0;
     padding: 10px 20px;
@@ -107,17 +111,23 @@ button:hover {
 
 /* Add styles for tab links */
 .tab {
-    overflow: hidden;
+    display: flex; /* Enables flexbox layout */
+    justify-content: space-between; /* Distributes space between buttons */
+    width: 100%; /* Ensures the tab container fills its parent's width */
     border-bottom: 1px solid #ccc;
+    /* now make each button get a row and then make then descend */
+    
 }
 
 .tab button {
+    flex: 1; /* Each button grows to take available space */
     background-color: inherit;
     border: none;
     outline: none;
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
+    text-align: center; /* Centers text inside the button */
 }
 
 .tab button:hover {
