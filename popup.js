@@ -9,38 +9,12 @@ async function getCurrentTabId() {
         return null;
     }
 }
-
 var currTabId;
 
 // Gets size from size slider, ranging from 1 to 100
 function getSize() {
     var sizeSlider = document.getElementById("size-slider");
-    // Prevents returned size from being 0
-    return Math.max(sizeSlider.value, 1);
-}
-var currSize = localStorage.getItem("savedSize");
-if (currSize == null) {
-    currSize = 50;
-}
-
-// Gets color from color wheel
-function getColor() {
-    var colorWheel = document.getElementById("color-wheel");
-    return colorWheel.value;
-}
-var currColor = localStorage.getItem("savedColor");
-if (currColor == null) {
-    currColor = "#c3c3c3";
-}
-
-// Gets background color from color wheel
-function getBgColor() {
-    var bgColorWheel = document.getElementById("bg-color-wheel");
-    return bgColorWheel.value;
-}
-var currBgColor = localStorage.getItem("savedBgColor");
-if (currBgColor == null) {
-    currBgColor = "#3c3c3c";
+    return sizeSlider.value;
 }
 
 // Gets font from font select
@@ -48,20 +22,28 @@ function getFont() {
     var fontSelect = document.getElementById("font-select");
     return fontSelect.value;
 }
-var currFont = localStorage.getItem("savedFont");
-if (currFont == null) {
-    currFont = "Arial";
+
+// Gets color from color wheel
+function getColor() {
+    var colorWheel = document.getElementById("color-wheel");
+    return colorWheel.value;
+}
+
+// Gets background color from color wheel
+function getBgColor() {
+    var bgColorWheel = document.getElementById("bg-color-wheel");
+    return bgColorWheel.value;
 }
 
 // Returns the new CSS to be injected into the website
 function getCSS() {
     let css = "";
     let bodyCss = "";
-    if (document.getElementById("enable-color").checked) {
-        css += `color: ${getColor()} !important;`;
-    }
     if (document.getElementById("enable-font").checked) {
         css += `font-family: ${getFont()} !important;`;
+    }
+    if (document.getElementById("enable-color").checked) {
+        css += `color: ${getColor()} !important;`;
     }
     if (document.getElementById("enable-bg-color").checked) {
         bodyCss += `background-color: ${getBgColor()} !important;`;
@@ -75,14 +57,81 @@ function getCSS() {
     }
     `;
 }
-var currCss = localStorage.getItem("savedCss");
-if (currCss == null) {
-    currCss = '';
+
+var currSize, currColor, currBgColor, currFont, currCss, currSizeCheck, currColorCheck, currBgColorCheck, currFontCheck;
+async function loadSavedValues() {
+    currCss = localStorage.getItem("savedCss");
+    currSize = localStorage.getItem("savedSize");
+    currFont = localStorage.getItem("savedFont");
+    currColor = localStorage.getItem("savedColor");
+    currBgColor = localStorage.getItem("savedBgColor");
+    currSizeCheck = localStorage.getItem("savedSizeCheck") === 'true';
+    currFontCheck = localStorage.getItem("savedFontCheck") === 'true';
+    currColorCheck = localStorage.getItem("savedColorCheck") === 'true';
+    currBgColorCheck = localStorage.getItem("savedBgColorCheck") === 'true';
+
+    if (currCss === null) {currCss = "";}
+    if (currSize === null) {currSize = 50;}
+    if (currColor === null) {currColor = "#c3c3c3";}
+    if (currBgColor === null) {currBgColor = "#3c3c3c";}
+    if (currFont === null) {currFont = "Arial";}
+    if (currSizeCheck === null) {currSizeCheck = true;}
+    if (currFontCheck === null) {currFontCheck = true;}
+    if (currColorCheck === null) {currColorCheck = true;}
+    if (currBgColorCheck === null) {currBgColorCheck = true;}
+
+    document.getElementById("size-slider").value = "" + currSize;
+    document.getElementById("color-wheel").value = currColor;
+    document.getElementById("bg-color-wheel").value = currBgColor;
+    document.getElementById("font-select").value = currFont;
+    document.getElementById("enable-size").checked = currSizeCheck;
+    document.getElementById("enable-font").checked = currFontCheck;
+    document.getElementById("enable-font").checked;
+    document.getElementById("enable-color").checked = currColorCheck;
+    document.getElementById("enable-bg-color").checked = currBgColorCheck;
+}
+
+async function updateValues() {
+    // Updates values of currSize, currColor, currBgColor, currFont to be saved later
+    currSizeCheck = document.getElementById("enable-size").checked;
+    currFontCheck = document.getElementById("enable-font").checked;
+    currColorCheck = document.getElementById("enable-color").checked;
+    currBgColorCheck = document.getElementById("enable-bg-color").checked;
+    if (currSizeCheck) {
+        currSize = getSize();
+    }
+    if (currFontCheck) {
+        currFont = getFont();
+    }
+    if (currColorCheck) {
+        currColor = getColor();
+    }
+    if (currBgColorCheck) {
+        currBgColor = getBgColor();
+    }
+}
+
+async function saveValues() {
+    localStorage.setItem("savedCss", currCss);
+    localStorage.setItem("savedSize", currSize);
+    localStorage.setItem("savedFont", currFont);
+    localStorage.setItem("savedColor", currColor);
+    localStorage.setItem("savedBgColor", currBgColor);
+    localStorage.setItem("savedSizeCheck", currSizeCheck);
+    localStorage.setItem("savedFontCheck", currFontCheck);
+    localStorage.setItem("savedColorCheck", currColorCheck);
+    localStorage.setItem("savedBgColorCheck", currBgColorCheck);
+}
+
+// Applies CSS and size
+async function apply() {
+    updateValues();
+    applyCSS();
+    applySize();
 }
 
 // Applies new CSS according to the specified color and font
 async function applyCSS() {
-    localStorage.clear();
     // Removes old CSS before injecting new one to not flood website with old CSS
     removeCSS(currTabId);
     currCss = getCSS();
@@ -122,7 +171,6 @@ async function removeCSS() {
 // Applies new size according to the specified size
 async function applySize() {
     if (document.getElementById("enable-size").checked) {
-        currSize = getSize();
         changeSize(getSize());
     }
 }
@@ -177,9 +225,6 @@ async function injectContentScript() {
 }
 
 async function applyColorblindMode(type) {
-    if (!currTabId) {
-        currTabId = await getCurrentTabId();
-    }
     await injectContentScript();
     try {
         await chrome.tabs.sendMessage(currTabId, { mode: type });
@@ -223,11 +268,11 @@ function handleCheckboxChange(event) {
 // Apply saved colorblind mode on page load
 document.addEventListener('DOMContentLoaded', async function () {
     currTabId = await getCurrentTabId();
+    loadSavedValues();
 
     // Existing event listeners
     var applyBtn = document.getElementById("apply-btn");
-    applyBtn.addEventListener('click', applyCSS);
-    applyBtn.addEventListener('click', applySize);
+    applyBtn.addEventListener('click', apply);
 
     var resetBtn = document.getElementById("reset-btn");
     resetBtn.addEventListener('click', reset);
@@ -244,7 +289,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     var colorblindResetBtn = document.getElementById("colorblind-reset-btn");
-    colorblindResetBtn.addEventListener('click', function () {
+    colorblindResetBtn.addEventListener('click', async function () {
         resetColorblindMode();
         document.getElementById("protanopia").checked = false;
         document.getElementById("deuteranopia").checked = false;
@@ -258,21 +303,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     document.getElementById("generalTab").addEventListener('click', function(event) { openTab(event, 'General'); });
     document.getElementById("colorblindTab").addEventListener('click', function(event) { openTab(event, 'Colorblind'); });
-
-    document.getElementById("size-slider").value = "" + currSize;
-    document.getElementById("color-wheel").value = currColor;
-    document.getElementById("bg-color-wheel").value = currBgColor;
-    document.getElementById("font-select").value = currFont;
 });
 
-document.addEventListener('visibilitychange', function () {
-    localStorage.setItem("savedCss", currCss);
-    localStorage.setItem("savedColor", currColor);
-    localStorage.setItem("savedSize", currSize);
-    localStorage.setItem("savedBgColor", currBgColor);
-    localStorage.setItem("savedFont", currFont);
-});
+document.addEventListener('visibilitychange', saveValues);
+
 // https://stackoverflow.com/questions/77495555/how-do-i-execute-a-script-on-the-current-tab-using-chrome-scripting-api:
 // https://stackoverflow.com/questions/11684454/getting-the-source-html-of-the-current-page-from-chrome-extension/11696154#11696154
 // https://stackoverflow.com/questions/15195209/how-to-get-font-size-in-html
 // Prof. Lumbroso's code
+// https://stackoverflow.com/questions/23765628/javascript-how-to-set-checkbox-checked-based-on-a-variable
