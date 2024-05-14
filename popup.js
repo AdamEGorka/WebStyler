@@ -165,16 +165,99 @@ function resizeBody(newSize) {
     resizeChildren(body);
 }
 
+async function injectContentScript() {
+    try {
+        await chrome.scripting.executeScript({
+            target: {tabId: currTabId},
+            files: ['content.js']
+        });
+    } catch (err) {
+        console.error("Failed to inject content script: ", err);
+    }
+}
+
+async function applyColorblindMode(type) {
+    if (!currTabId) {
+        currTabId = await getCurrentTabId();
+    }
+    await injectContentScript();
+    try {
+        await chrome.tabs.sendMessage(currTabId, { mode: type });
+        console.log("Daltonization applied");
+    } catch (error) {
+        console.error("There was an error sending the message: " + error.message);
+    }
+}
+
+function resetColorblindMode() {
+    chrome.scripting.executeScript({
+        target: {tabId: currTabId},
+        func: () => location.reload(),
+    });
+}
+
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+function handleCheckboxChange(event) {
+    if (event.target.checked) {
+        document.getElementById("protanopia").checked = event.target.id === "protanopia";
+        document.getElementById("deuteranopia").checked = event.target.id === "deuteranopia";
+        document.getElementById("tritanopia").checked = event.target.id === "tritanopia";
+        localStorage.setItem("colorblindMode", event.target.id);
+    }
+}
+
 // When DOM is loaded, adds event listeners to buttons
+// Apply saved colorblind mode on page load
 document.addEventListener('DOMContentLoaded', async function () {
     currTabId = await getCurrentTabId();
 
+    // Existing event listeners
     var applyBtn = document.getElementById("apply-btn");
     applyBtn.addEventListener('click', applyCSS);
     applyBtn.addEventListener('click', applySize);
 
     var resetBtn = document.getElementById("reset-btn");
     resetBtn.addEventListener('click', reset);
+
+    var colorblindApplyBtn = document.getElementById("colorblind-apply-btn");
+    colorblindApplyBtn.addEventListener('click', function () {
+        if (document.getElementById("protanopia").checked) {
+            applyColorblindMode("protanopia");
+        } else if (document.getElementById("deuteranopia").checked) {
+            applyColorblindMode("deuteranopia");
+        } else if (document.getElementById("tritanopia").checked) {
+            applyColorblindMode("tritanopia");
+        }
+    });
+
+    var colorblindResetBtn = document.getElementById("colorblind-reset-btn");
+    colorblindResetBtn.addEventListener('click', function () {
+        resetColorblindMode();
+        document.getElementById("protanopia").checked = false;
+        document.getElementById("deuteranopia").checked = false;
+        document.getElementById("tritanopia").checked = false;
+        localStorage.removeItem("colorblindMode");
+    });
+
+    document.getElementById("protanopia").addEventListener('change', handleCheckboxChange);
+    document.getElementById("deuteranopia").addEventListener('change', handleCheckboxChange);
+    document.getElementById("tritanopia").addEventListener('change', handleCheckboxChange);
+
+    document.getElementById("generalTab").addEventListener('click', function(event) { openTab(event, 'General'); });
+    document.getElementById("colorblindTab").addEventListener('click', function(event) { openTab(event, 'Colorblind'); });
 
     document.getElementById("size-slider").value = "" + currSize;
     document.getElementById("color-wheel").value = currColor;
@@ -189,7 +272,6 @@ document.addEventListener('visibilitychange', function () {
     localStorage.setItem("savedBgColor", currBgColor);
     localStorage.setItem("savedFont", currFont);
 });
-
 // https://stackoverflow.com/questions/77495555/how-do-i-execute-a-script-on-the-current-tab-using-chrome-scripting-api:
 // https://stackoverflow.com/questions/11684454/getting-the-source-html-of-the-current-page-from-chrome-extension/11696154#11696154
 // https://stackoverflow.com/questions/15195209/how-to-get-font-size-in-html

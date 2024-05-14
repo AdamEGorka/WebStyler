@@ -105,6 +105,42 @@ button:hover {
     margin-bottom: 10px; /* Adjust this value for the desired gap */
 }
 
+/* Add styles for tab links */
+.tab {
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+}
+
+.tab button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+.tab button:hover {
+    background-color: #ddd;
+}
+
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border-top: none;
+}
+
+/* Default display for the first tab */
+.tabcontent:first-child {
+    display: block;
+}
+
+
 #apply-btn {
     margin-right: 10px;
 }

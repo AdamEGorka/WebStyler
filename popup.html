@@ -3,50 +3,75 @@
     <h1>WebStyler</h1>
   </body>
 </html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Webstyler Extension</title>
     <link rel="stylesheet" href="styles.css">
-    <script src='popup.js'></script>
+    <script src='popup.js' defer></script>
 </head>
 <body>
-    <div class="feature-container">
-        <input type="checkbox" id="enable-size" checked>
-        <label for="size-slider">Size:</label>
-        <input type="range" id="size-slider" min="0" max="100">
+    <div class="tab">
+        <button class="tablinks" id="generalTab">General</button>
+        <button class="tablinks" id="colorblindTab">Colorblind</button>
     </div>
-    <div class="feature-container">
-        <input type="checkbox" id="enable-spacing" checked>
-        <label for="spacing-slider">Spacing:</label>
-        <input type="range" id="spacing-slider" min="0" max="100">
+
+    <div id="General" class="tabcontent">
+        <div class="feature-container">
+            <input type="checkbox" id="enable-size" checked>
+            <label for="size-slider">Size:</label>
+            <input type="range" id="size-slider" min="0" max="100">
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="enable-spacing" checked>
+            <label for="spacing-slider">Spacing:</label>
+            <input type="range" id="spacing-slider" min="0" max="100">
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="enable-font" checked>
+            <label for="font-select">Font:</label>
+            <select id="font-select">
+                <option value="Arial">Arial</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+            </select>
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="enable-color" checked>
+            <label for="color-wheel">Color:</label>
+            <input type="color" id="color-wheel">
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="enable-bg-color" checked>
+            <label for="bg-color-wheel">BG Color:</label>
+            <input type="color" id="bg-color-wheel">
+        </div>
+        <div class="buttons-container">
+            <button id="apply-btn">Apply</button>
+            <button id="reset-btn">Reset</button>
+        </div>
     </div>
-    <div class="feature-container">
-        <input type="checkbox" id="enable-font" checked>
-        <label for="font-select">Font:</label>
-        <select id="font-select">
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-            <option value="Helvetica">Helvetica</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Courier New">Courier New</option>
-        </select>
-    </div>
-    <div class="feature-container">
-        <input type="checkbox" id="enable-color" checked>
-        <label for="color-wheel">Color:</label>
-        <input type="color" id="color-wheel">
-    </div>
-    <div class="feature-container">
-        <input type="checkbox" id="enable-bg-color" checked>
-        <label for="bg-color-wheel">BG Color:</label>
-        <input type="color" id="bg-color-wheel">
-    </div>
-    <div class="buttons-container">
-        <button id="apply-btn">Apply</button>
-        <button id="reset-btn">Reset</button>
+
+    <div id="Colorblind" class="tabcontent">
+        <div class="feature-container">
+            <input type="checkbox" id="protanopia">
+            <label for="protanopia">Protanopia</label>
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="deuteranopia">
+            <label for="deuteranopia">Deuteranopia</label>
+        </div>
+        <div class="feature-container">
+            <input type="checkbox" id="tritanopia">
+            <label for="tritanopia">Tritanopia</label>
+        </div>
+        <div class="buttons-container">
+            <button id="colorblind-apply-btn">Apply</button>
+            <button id="colorblind-reset-btn">Reset</button>
+        </div>
     </div>
 </body>
 </html>
