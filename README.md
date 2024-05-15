@@ -20,8 +20,14 @@ Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the Web
 * Navigate to the directory where you put the folder and click Ok
 * Assuming there are no errors, you should see a new icon in your toolbar.
 ## Demo
+
+https://github.com/AdamEGorka/WebStyler/assets/45395187/9ba46606-5e45-4553-b500-ea8b264f325c
+
 ![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/8886864c-1cec-480e-845f-c26cbbe1a80d)
 ![image](https://github.com/AdamEGorka/WebStyler/assets/45395187/4782fd43-d284-482a-9280-28df970325a9)
+
+
+
 
 
 ## Colorblind filters
