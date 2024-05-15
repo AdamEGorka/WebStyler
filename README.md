@@ -26,6 +26,7 @@ Soon to be available on the chrome web store (pending review currently)
 * Assuming there are no errors, you should see a new icon in your toolbar.
 * 
 ## How to Use
+[Demo Video Link](https://www.youtube.com/watch?v=VTXktBPBP8s)
 
 
 https://github.com/AdamEGorka/WebStyler/assets/45395187/f7bca1da-1a00-4531-8b31-55d270caa84b
