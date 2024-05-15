@@ -26,7 +26,10 @@ Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the Web
 
 
 
-https://github.com/AdamEGorka/WebStyler/assets/45395187/94326867-0b43-49c8-8ac5-a80da5bed7f1
+
+
+https://github.com/AdamEGorka/WebStyler/assets/45395187/c518c0e3-6e53-4cf9-897e-1d72d23d325d
+
 
 
 
