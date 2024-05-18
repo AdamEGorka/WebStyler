@@ -7,7 +7,7 @@
 
 WebStyler is a Chrome extension that allows users to change visual features (e.g., text size, color) on websites to suit their preferences. Giving users a way to interact with these visual elements more directly and easily, this extension can be used for accessibility as well as personalization.
 
-Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the WebStyler landing page.
+Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the WebStyler landing page and [here](https://chromewebstore.google.com/detail/webstyler/jpjcfppbjkiibakhnihgabmmanijdidf?hl=en&authuser=0) to visit the chrome web store page.
 
 ## Features
 
@@ -19,12 +19,13 @@ Click [here](https://liuxk83.github.io/webstyler-landing-page/) to visit the Web
 
 ## How to Install
 Soon to be available on the chrome web store (pending review currently)
+* Click [here](https://chromewebstore.google.com/detail/webstyler/jpjcfppbjkiibakhnihgabmmanijdidf?hl=en&authuser=0) to visit the chrome web store page and install from there; otherwise follow instructions below
 * Pull the github repo to a local file on your computer (or press code, download zip, and extract the folder).
 * Navigate to chrome://extensions
 * Expand the Developer drop-down and click “Load unpacked extension”
 * Navigate to the directory where you put the folder and click Ok
 * Assuming there are no errors, you should see a new icon in your toolbar.
-* 
+
 ## How to Use
 [Demo Video Link](https://www.youtube.com/watch?v=VTXktBPBP8s)
 
